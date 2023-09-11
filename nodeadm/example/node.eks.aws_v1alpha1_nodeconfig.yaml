@@ -1,0 +1,40 @@
+---
+apiVersion: node.eks.aws/v1alpha1
+kind: NodeConfig
+metadata:
+  name: example
+spec:
+  aws:
+    retry:
+      maxAttempts: 10
+      backoffRate: "1.5"
+      initialDelaySeconds: 1
+  cluster:
+    name: my-cluster
+    apiServerEndpoint: https://example.com
+    certificateAuthority: Y2VydGlmaWNhdGVBdXRob3JpdHk=
+    id:
+    ipFamily: ipv4
+    isOutpost: false
+    cidr:
+    dnsAddress:
+  containerd:
+    config:
+      mergeWithDefaults: true
+      args:
+        - -v2
+      source: file://my-containerd-config.toml
+      inline: |
+        []
+  kubelet:
+    config:
+      mergeWithDefaults: true
+      args:
+        - -v2
+      source: file://my-kubelet-config.json
+      inline: |
+        {
+          "maxPods": 123
+        }
+  storage:
+    localDisk: raid0

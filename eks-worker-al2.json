@@ -141,6 +141,18 @@
     },
     {
       "type": "file",
+      "source": "{{template_dir}}/nodeadm/_dist/bin/linux/amd64/nodeadm",
+      "destination": "{{user `working_dir`}}/nodeadm"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo chmod a+x {{user `working_dir`}}/nodeadm",
+        "sudo mv {{user `working_dir`}}/nodeadm /usr/bin/"
+      ]
+    },
+    {
+      "type": "file",
       "source": "{{template_dir}}/log-collector-script/linux/",
       "destination": "{{user `working_dir`}}/log-collector-script/"
     },
