@@ -14,10 +14,12 @@ func BuildConfigProvider(rawConfigSourceURL string) (ConfigProvider, error) {
 	if err != nil {
 		return nil, err
 	}
-	source := getURLWithoutScheme(parsedURL)
 	switch parsedURL.Scheme {
 	case "file":
+		source := getURLWithoutScheme(parsedURL)
 		return NewFileConfigProvider(source), nil
+	case "imds":
+		return NewIMDSConfigProvider(), nil
 	default:
 		return nil, fmt.Errorf("unsupported scheme: %s", parsedURL.Scheme)
 	}

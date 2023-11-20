@@ -1,9 +1,11 @@
 FROM golang:1.21 AS imds-mock-build
+RUN go env -w GOPROXY=direct
 RUN GOBIN=/bin go install github.com/aws/amazon-ec2-metadata-mock/cmd@v1.11.2
 RUN mv /bin/cmd /imds-mock
 
 FROM golang:1.21 AS nodeadm-build
 WORKDIR /go/src/github.com/awslabs/nodeadm
+RUN go env -w GOPROXY=direct
 COPY go.mod .
 COPY go.sum .
 RUN go mod download
