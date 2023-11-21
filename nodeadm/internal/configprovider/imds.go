@@ -38,12 +38,12 @@ func (ics *imdsConfigProvider) Provide() (*internalapi.NodeConfig, error) {
 		return nil, err
 	}
 
-	data, err := parseMIMEUserData(userData)
+	nodeConfigData, err := parseMIMEUserData(userData)
 	if err != nil {
 		return nil, err
 	}
 
-	return apibridge.DecodeNodeConfig(data)
+	return apibridge.DecodeNodeConfig(nodeConfigData)
 }
 
 func parseMIMEUserData(mimedata []byte) ([]byte, error) {
@@ -61,16 +61,13 @@ func parseMIMEUserData(mimedata []byte) ([]byte, error) {
 		return nil, fmt.Errorf("UserData MIME Content-Type was %s and needs to be %s", mediaType, userDataMediaType)
 	}
 
-	boundary := params["boundary"]
-	userDataReader := multipart.NewReader(bytes.NewReader(mimedata), boundary)
-
+	userDataReader := multipart.NewReader(bytes.NewReader(mimedata), params["boundary"])
 	for {
 		part, err := userDataReader.NextPart()
 		if err != nil {
 			if err == io.EOF {
 				return nil, fmt.Errorf("Could not find %s data within the IMDS UserData", eksBootstrapConfigValue)
 			}
-
 			return nil, err
 		}
 
@@ -85,7 +82,6 @@ func parseMIMEUserData(mimedata []byte) ([]byte, error) {
 				if err != nil {
 					return nil, err
 				}
-
 				return configData, nil
 			}
 		}

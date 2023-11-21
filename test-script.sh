@@ -2,27 +2,19 @@
 
 set -euo pipefail
 
-TEST_CONFIG_PATH=bootstrapv2-test/test-config.yaml
-LT_DATA_PATH=bootstrapv2-test/bootstrap-v2-launch-template.json
+TEST_DIR=bootstrapv2-test
+
+# Dependency
+userdata=$(cat $TEST_DIR/bootstrap-v2-userdata.txt | base64 -w 0)
+ami_id=${1}
+
+# Generated
+TEST_CONFIG_PATH=$TEST_DIR/bootstrap-v2-config.yaml
+LT_DATA_PATH=$TEST_DIR/bootstrap-v2-launch-template.json
 
 CLUSTER_NAME=bootstrap-v2-cluster
 NODEGROUP_NAME=bootstrap-v2-nodegroup
 LT_NAME=bootstrap-v2-launch-template
-userdata=$(cat bootstrapv2-test/bootstrap-v2-userdata.txt | base64 -w 0)
-
-PROJECT_DIR=$(pwd)
-BOOSTRAP_PROJECT_DIR=$(pwd)/nodeadm
-
-# build bootstrap
-
-cd $BOOSTRAP_PROJECT_DIR
-make build
-make dist
-
-# build the ami with the new bootstrap
-cd $PROJECT_DIR
-
-ami_id=${1:-ami-0df65f87dada26fce}
 
 # launch a nodegroup using this ami and make sure that is properly configured
 
@@ -34,7 +26,7 @@ cat << EOF > $LT_DATA_PATH
 }
 EOF
 
-aws ec2 delete-launch-template --launch-template-name $LT_NAME || true
+aws ec2 delete-launch-template --launch-template-name $LT_NAME 2>&1>/dev/null || true
 
 LT_ID=$(aws ec2 create-launch-template \
   --launch-template-name $LT_NAME \
@@ -60,9 +52,7 @@ managedNodeGroups:
 EOF
 
 sed -i -e "s/ami: .*/ami: ${ami_id}/" $TEST_CONFIG_PATH
-cat $TEST_CONFIG_PATH
-eksctl create nodegroup -f $TEST_CONFIG_PATH 
 
-read -p "pausing.." 
-
+eksctl create nodegroup -f $TEST_CONFIG_PATH || true
+read -p "pausing.."
 eksctl delete nodegroup -f $TEST_CONFIG_PATH --approve --wait

@@ -20,11 +20,16 @@ func NewKubeletDaemon(daemonManager daemon.DaemonManager) daemon.Daemon {
 }
 
 func (k *kubelet) Configure(c *api.NodeConfig) error {
-	err := writeKubeconfig(c)
-	if err != nil {
+	if err := writeClusterCaCert(c); err != nil {
 		return err
 	}
-	return writeKubeletConfig(c)
+	if err := writeKubeconfig(c); err != nil {
+		return err
+	}
+	if err := writeKubeletConfig(c); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (k *kubelet) EnsureRunning() error {

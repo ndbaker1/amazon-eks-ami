@@ -3,6 +3,8 @@ package kubelet
 import (
 	"bytes"
 	_ "embed"
+	"encoding/base64"
+	"io"
 	"os"
 	"path"
 	"text/template"
@@ -11,8 +13,9 @@ import (
 )
 
 const (
-	kubeconfigDir  = "/var/lib/kubelet"
-	kubeconfigPerm = 0644
+	caCertificatePath = "/etc/kubernetes/pki"
+	kubeconfigDir     = "/var/lib/kubelet"
+	kubeconfigPerm    = 0644
 )
 
 var (
@@ -31,4 +34,16 @@ func writeKubeconfig(c *api.NodeConfig) error {
 	}
 	path := path.Join(kubeconfigDir, "kubeconfig")
 	return os.WriteFile(path, buf.Bytes(), kubeconfigPerm)
+}
+
+func writeClusterCaCert(c *api.NodeConfig) error {
+	caDecoded := base64.NewDecoder(&base64.Encoding{}, bytes.NewReader(c.Spec.Cluster.CertificateAuthority))
+	caDecodedStr, err := io.ReadAll(caDecoded)
+	if err != nil {
+		return err
+	}
+	if err := os.MkdirAll(path.Dir(caCertificatePath), kubeletConfigPerm); err != nil {
+		return err
+	}
+	return os.WriteFile(caCertificatePath, caDecodedStr, kubeletConfigPerm)
 }
