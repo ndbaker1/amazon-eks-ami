@@ -90,20 +90,6 @@ build: crds generate fmt vet ## Build binary.
 run: crds generate fmt vet ## Run a controller from your host.
 	go run ./main.go
 
-##@ Deployment
-
-.PHONY: install
-install: crds kustomize ## Install CRDs into the K8s cluster specified in ~/.kube/config.
-	$(KUSTOMIZE) build config/crd | $(KUBECTL) apply -f -
-
-ifndef ignore-not-found
-  ignore-not-found = false
-endif
-
-.PHONY: uninstall
-uninstall: crds kustomize ## Uninstall CRDs from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
-	$(KUSTOMIZE) build config/crd | $(KUBECTL) delete --ignore-not-found=$(ignore-not-found) -f -
-
 ##@ Build Dependencies
 
 ## Location to install dependencies to

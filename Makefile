@@ -112,8 +112,13 @@ $(foreach packerVar,$(PACKER_VARIABLES),-var $(packerVar)='$($(packerVar))')
 validate: ## Validate packer config
 	$(PACKER_BINARY) validate $(PACKER_VAR_FLAGS) $(PACKER_TEMPLATE_FILE)
 
+NODEADM_WORKSPACE ?= nodeadm
+.PHONY: nodeadm
+nodeadm: ## Build the nodeadm bootstrap binary
+	cd $(NODEADM_WORKSPACE) && $(MAKE) build dist
+
 .PHONY: k8s
-k8s: validate ## Build default K8s version of EKS Optimized AL2 AMI
+k8s: validate nodeadm ## Build default K8s version of EKS Optimized AL2 AMI
 	@echo "$(T_GREEN)Building AMI for version $(T_YELLOW)$(kubernetes_version)$(T_GREEN) on $(T_YELLOW)$(arch)$(T_RESET)"
 	$(PACKER_BINARY) build -timestamp-ui -color=false $(PACKER_VAR_FLAGS) $(PACKER_TEMPLATE_FILE)
 
