@@ -1,4 +1,5 @@
 {
+    "amd_gpu_driver_version": "6.4.1",
     "ami_component_description": "(k8s: {{ user `kubernetes_version` }}, containerd: {{ user `containerd_version` }})",
     "ami_description": "EKS-optimized Kubernetes node based on Amazon Linux 2023",
     "ami_regions": "",
