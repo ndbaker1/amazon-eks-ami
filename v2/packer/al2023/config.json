@@ -1,0 +1,44 @@
+[
+  {
+    "path": "../../bundles/base",
+    "commands": [
+        "sudo cp -rv rootfs/* /",
+        "sudo bash run.sh"
+    ]
+  },
+  {
+    "path": "../../bundles/container-runtime",
+    "commands": [
+        "sudo cp -rv rootfs/* /",
+        "sudo bash run.sh"
+    ]
+  },
+  {
+    "path": "../../bundles/kubelet",
+    "commands": [
+        "sudo cp -rv rootfs/* /",
+        "sudo bash run.sh"
+    ]
+  },
+  {
+    "path": "../../bundles/nodeadm",
+    "commands": [
+        "sudo cp -rv rootfs/* /",
+        "sudo bash run.sh"
+    ]
+  },
+  {
+    "path": "../../bundles/base",
+    "commands": [
+        "sudo cp -rv rootfs/* /",
+        "sudo bash run.sh"
+    ]
+  },
+  {
+    "path": "../../bundles/base",
+    "commands": [
+        "sudo cp -rv rootfs/* /",
+        "sudo bash run.sh"
+    ]
+  }
+]
